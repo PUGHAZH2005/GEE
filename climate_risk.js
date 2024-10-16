@@ -131,6 +131,8 @@ if (roi.size().getInfo() === 0) {
   // Precipitation Anomaly Calculation
   var precipitationAnomaly = totalPrecipitation.subtract(historicalPrecipitation).rename('Precipitation Anomaly').clip(roi);
   
+  
+
   // Calculate Min/Max for each parameter
   var soilMoistureMinMax = soilMoisture.reduceRegion({
     reducer: ee.Reducer.minMax(),
@@ -203,7 +205,7 @@ if (roi.size().getInfo() === 0) {
   Map.addLayer(totalPrecipitation, {min: 11292, max: 27233, palette: ['blue', 'green', 'yellow', 'red']}, 'Total Precipitation');
   Map.addLayer(droughtIndex, {min: -0.7, max: 0.3, palette: ['red', 'yellow', 'green']}, 'Droughtness Index');
   Map.addLayer(tempAnomaly, {min:-46 , max: 62, palette: ['blue', 'white', 'red']}, 'Temperature Anomaly');
-  Map.addLayer(precipitationAnomaly, {min: 0, max: 100, palette: ['red', 'blue', 'green']}, 'Precipitation Anomaly');
+  Map.addLayer(precipitationAnomaly, {min: -25045, max: -11623, palette: ['red', 'blue', 'green']}, 'Precipitation Anomaly');
   
   // Create legends for each layer
   createLegend('Soil Moisture', ['blue', 'green', 'yellow', 'red'], ['Wet', 'Moist', 'Dry', 'Very Dry']);
@@ -223,7 +225,7 @@ if (roi.size().getInfo() === 0) {
     dem: {low: 122, mid: 1000, high: 2214},  // Adjust mid-value based on your data
     droughtIndex: {low: -0.3, mid: 0, high: 0.3},
     tempAnomaly:{low:-10, mid: 20, high: 62},
-    precipitationAnomaly:{low: 0, mid:500, high: 1000},
+    precipitationAnomaly:{low: -25045, mid: -18000, high: -11623},
   };
 
   var vulnerability = soilMoisture.lte(riskThresholds.soilMoisture.mid)
@@ -232,15 +234,13 @@ if (roi.size().getInfo() === 0) {
     .add(dem.lte(riskThresholds.dem.mid))
     .add(droughtIndex.lte(riskThresholds.droughtIndex.mid))
     .add(tempAnomaly.lte(riskThresholds.tempAnomaly.mid))
-    .add(precipitationAnomaly.lt(riskThresholds.precipitationAnomaly.mid));
+    .add(precipitationAnomaly.lte(riskThresholds.precipitationAnomaly.mid));
     
   var hazard = vulnerability;
 
   // Calculate risk level
   var riskValue = vulnerability.multiply(hazard);
   
-  Map.addLayer(riskValue, {min: 0, max: 5, palette: ['green', 'yellow', 'red']}, 'Climate Risk Level');
-  createLegend('Climate Risk', ['red', 'blue', 'green'], ['Dry', 'Normal', 'Wet']);
   // Print min/max for each parameter
   print('Soil Moisture Min/Max:', soilMoistureMinMax);
   print('NDVI Min/Max:', ndviMinMax);
@@ -260,4 +260,6 @@ if (roi.size().getInfo() === 0) {
 
   // Print climate risk summary
   print('Climate Risk Level:', riskValue);
+  Map.addLayer(riskValue, {min: 0, max: 100, palette: ['red', 'blue', 'green']}, 'Climate Risk Level');
+  createLegend('Climate Risk', ['green', 'blue', 'red'], ['Low', 'Moderate', 'High']);
 }
