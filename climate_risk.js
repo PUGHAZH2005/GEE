@@ -3,11 +3,11 @@ function createLegend(title, colors, labels) {
   var legend = ui.Panel({
     style: {
       position: 'bottom-center',
-      padding: '4px 8px',
+      padding: '8px 4px',
     },
   });
 
-  var titleLabel = ui.Label(title, {fontWeight: 'bold', fontSize: '18px', margin: '8px 0'});
+  var titleLabel = ui.Label(title, {fontWeight: 'bold', fontSize: '18px', margin: '12px 0'});
   legend.add(titleLabel);
 
   for (var i = 0; i < colors.length; i++) {
@@ -15,7 +15,7 @@ function createLegend(title, colors, labels) {
       style: {
         backgroundColor: colors[i],
         padding: '8px',
-        margin: '4px 0',
+        margin: '6px 6px',
       },
     });
     var description = ui.Label(labels[i], {margin: '4px 0'});
@@ -260,6 +260,6 @@ if (roi.size().getInfo() === 0) {
 
   // Print climate risk summary
   print('Climate Risk Level:', riskValue);
-  Map.addLayer(riskValue, {min: 0, max: 100, palette: ['red', 'blue', 'green']}, 'Climate Risk Level');
+  Map.addLayer(riskValue, {min: 0, max: 100, palette: ['green', 'blue', 'red']}, 'Climate Risk Level');
   createLegend('Climate Risk', ['green', 'blue', 'red'], ['Low', 'Moderate', 'High']);
 }
